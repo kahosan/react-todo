@@ -1,6 +1,9 @@
-import { Global, keyframes } from '@emotion/react';
-import { atom, useAtom } from 'jotai';
 import { useCallback, useState } from 'react';
+
+import { Global, keyframes } from '@emotion/react';
+
+import { useAtom } from 'jotai';
+import { atomWithStorage } from 'jotai/utils';
 
 interface TodoProps {
   id: number
@@ -8,15 +11,7 @@ interface TodoProps {
   completed: boolean
 }
 
-const baseAtom = atom<TodoProps[]>(
-  JSON.parse(localStorage.getItem('todoList') ?? '[]') as TodoProps[] || []
-);
-const todoAtom = atom(
-  get => get(baseAtom),
-  (_get, set, todoList: TodoProps[]) => {
-    set(baseAtom, todoList);
-    Promise.resolve().then(() => localStorage.setItem('todoList', JSON.stringify(todoList)));
-  });
+const todoAtom = atomWithStorage<TodoProps[]>('todoList', []);
 
 const LogoSpin = keyframes({
   from: {
